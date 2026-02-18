@@ -56,15 +56,6 @@ Następnie otwórz `http://localhost:3000`.
 
 ---
 
-## Wdrożenie na Vercel
-
-1. Wgraj repozytorium na GitHub
-2. Zaloguj się na [vercel.com](https://vercel.com) i kliknij **Add New → Project**
-3. Wybierz to repozytorium
-4. Framework: **Other** (static)
-5. Kliknij **Deploy** — gotowe!
-
----
 
 ## Struktura projektu
 
