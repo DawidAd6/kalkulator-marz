@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Marży Dropshippingowej</title>
+  <meta name="description" content="Kalkulator marży dla sprzedawców dropshippingowych. Oblicz zysk i rentowność ofert na Allegro, Temu, AliExpress.">
+  <meta name="keywords" content="kalkulator marży, dropshipping, allegro, temu, aliexpress, zysk, marża">
+  <meta property="og:title" content="Kalkulator Marży Dropshippingowej">
+  <meta property="og:description" content="Oszacuj rentowność swoich ofert na Allegro, Temu i AliExpress">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#6366f1">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="bg-decoration">
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+    <div class="bg-blob bg-blob-3"></div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Confirm dialog -->
+  <div id="confirm-overlay" class="confirm-overlay">
+    <div class="confirm-dialog">
+      <p id="confirm-message"></p>
+      <div class="confirm-actions">
+        <button id="confirm-cancel" class="btn-secondary">Anuluj</button>
+        <button id="confirm-ok" class="btn-danger">Tak, wyczyść</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="app-header">
+    <div class="header-row">
+      <div class="logo">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="12" fill="url(#logo-grad)"/>
+          <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40">
+              <stop stop-color="#6366f1"/>
+              <stop offset="1" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" title="Przełącz motyw" aria-label="Przełącz motyw jasny/ciemny">
+        <svg class="icon-sun" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 2V4M10 16V18M2 10H4M16 10H18M4.93 4.93L6.34 6.34M13.66 13.66L15.07 15.07M4.93 15.07L6.34 13.66M13.66 6.34L15.07 4.93" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M17.09 11.18A7 7 0 018.82 2.91 7 7 0 1017.09 11.18z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <h1>Kalkulator Marży</h1>
+    <p class="subtitle">Oszacuj rentowność swoich ofert na Allegro, Temu i AliExpress</p>
+
+    <!-- Quick presets -->
+    <div class="presets-row">
+      <span class="presets-label">Szybkie szablony:</span>
+      <button class="preset-btn" data-preset="aliexpress">AliExpress produkt</button>
+      <button class="preset-btn" data-preset="allegro">Allegro produkt</button>
+      <button class="preset-btn" data-preset="temu">Temu produkt</button>
+    </div>
+  </header>
+
+  <main class="calculator-card">
+    <section class="form-panel">
+      <div class="panel-header">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2L2 7L10 12L18 7L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M2 13L10 18L18 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 10L10 15L18 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Dane produktu</span>
+      </div>
+      <form id="calc-form" novalidate>
+        <div class="form-group">
+          <label for="product-name">Nazwa produktu</label>
+          <input type="text" id="product-name" placeholder="np. Etui iPhone 15 Pro">
+        </div>
+
+        <div class="form-row form-row-3">
+          <div class="form-group">
+            <label for="purchase-price">Cena zakupu</label>
+            <input type="number" id="purchase-price" min="0" step="0.01" placeholder="np. 12.50">
+          </div>
+          <div class="form-group form-group-narrow">
+            <label for="purchase-currency">Waluta</label>
+            <select id="purchase-currency">
+              <option value="PLN">PLN</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="CNY">CNY</option>
+              <option value="GBP">GBP</option>
+            </select>
+            <small class="helper-text">Kursy orientacyjne</small>
+          </div>
+          <div class="form-group">
+            <label for="shipping-cost">Koszt dostawy</label>
+            <input type="number" id="shipping-cost" min="0" step="0.01" placeholder="np. 5.00">
+            <small class="helper-text">W wybranej walucie</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="selling-price">Cena sprzedaży na platformie (PLN)</label>
+          <input type="number" id="selling-price" min="0" step="0.01" placeholder="np. 49.99">
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="platform">Platforma</label>
+            <select id="platform">
+              <option value="allegro">Allegro</option>
+              <option value="temu">Temu</option>
+              <option value="aliexpress">AliExpress</option>
+              <option value="other">Inna</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="commission-rate">Prowizja (%)</label>
+            <input type="number" id="commission-rate" min="0" max="100" step="0.1" value="12">
+            <small class="helper-text">Allegro: 10–15%, Temu: 5–15%</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ads-cost">Koszt reklamy/szt. (PLN)</label>
+            <input type="number" id="ads-cost" min="0" step="0.01" value="0" placeholder="0.00">
+            <small class="helper-text">Allegro Ads, promowane oferty</small>
+          </div>
+          <div class="form-group">
+            <label for="packaging-cost">Koszt pakowania (PLN)</label>
+            <input type="number" id="packaging-cost" min="0" step="0.01" value="0" placeholder="0.00">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="return-rate">Szacowane zwroty (%)</label>
+            <input type="number" id="return-rate" min="0" max="100" step="0.1" value="0" placeholder="0">
+            <small class="helper-text">% zamówień zwracanych</small>
+          </div>
+          <div class="form-group">
+            <label for="quantity">Ilość sztuk</label>
+            <input type="number" id="quantity" min="1" step="1" value="1" placeholder="1">
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="vat-rate">Stawka VAT (%)</label>
+            <select id="vat-rate">
+              <option value="0">0%</option>
+              <option value="8">8%</option>
+              <option value="23" selected>23%</option>
+            </select>
+          </div>
+          <div class="form-group checkbox-group-wrapper">
+            <div class="checkbox-group">
+              <input type="checkbox" id="include-vat">
+              <label for="include-vat">Uwzględnij VAT w obliczeniach</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group-wrapper">
+          <div class="checkbox-group">
+            <input type="checkbox" id="foreign-dropshipping">
+            <label for="foreign-dropshipping">Dropshipping zagraniczny (AliExpress / Temu)</label>
+          </div>
+        </div>
+
+        <div class="form-group" id="delivery-time-group" hidden>
+          <label for="delivery-time">Szacowany czas dostawy (dni)</label>
+          <input type="text" id="delivery-time" placeholder="np. 14-21 dni">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="calc-btn" disabled>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 6H12M6 9H12M6 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Oblicz marżę
+          </button>
+          <button type="button" id="reset-btn" class="btn-reset" title="Wyczyść formularz">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 3L15 15M3 15L15 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="results-panel" id="results-panel" aria-live="polite">
+      <div class="results-placeholder" id="results-placeholder">
+        <div class="placeholder-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <path d="M24 16V32M16 24H32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p>Wypełnij formularz i kliknij<br><strong>„Oblicz marżę"</strong></p>
+      </div>
+      <div class="results-content" id="results-content" hidden>
+        <div class="result-label">Zysk na sztuce</div>
+        <div class="result-profit" id="result-profit"></div>
+        <div class="result-margin" id="result-margin"></div>
+
+        <div class="result-batch" id="result-batch" hidden>
+          <div class="batch-label">Zysk łączny</div>
+          <div class="batch-value" id="batch-value"></div>
+        </div>
+
+        <!-- Donut chart -->
+        <div class="chart-container" id="chart-container">
+          <canvas id="donut-chart" width="160" height="160"></canvas>
+          <div class="chart-legend" id="chart-legend"></div>
+        </div>
+
+        <div class="result-breakdown" id="result-breakdown"></div>
+
+        <div class="result-breakeven" id="result-breakeven"></div>
+
+        <div class="result-interpretation" id="result-interpretation"></div>
+
+        <button type="button" id="share-btn" class="btn-share" title="Kopiuj link do obliczeń">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12 5.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM4 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM12 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM6.29 9.13l3.42 2.24M9.71 4.63L6.29 6.87" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Udostępnij
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Break-even calculator -->
+  <section class="breakeven-section">
+    <div class="section-header">
+      <div class="section-title">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M2 18L7 10L12 14L18 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Kalkulator ceny minimalnej</h2>
+      </div>
+      <small class="helper-text">Jaka minimalna cena sprzedaży zapewni określony zysk?</small>
+    </div>
+    <div class="breakeven-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="desired-profit">Pożądany zysk na sztuce (PLN)</label>
+          <input type="number" id="desired-profit" min="0" step="0.5" value="10" placeholder="np. 10">
+        </div>
+        <div class="form-group breakeven-result-group">
+          <label>Minimalna cena sprzedaży</label>
+          <div class="breakeven-result" id="breakeven-result">—</div>
+          <small class="helper-text">Na podstawie kosztów z kalkulatora powyżej</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- History stats -->
+  <section class="stats-section" id="stats-section" hidden>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-count">0</div>
+        <div class="stat-label">Obliczeń</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-avg-profit">0 zł</div>
+        <div class="stat-label">Średni zysk</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-avg-margin">0%</div>
+        <div class="stat-label">Średnia marża</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-best">—</div>
+        <div class="stat-label">Najlepszy produkt</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- History table -->
+  <section class="history-section">
+    <div class="history-header">
+      <div class="history-title">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 6V10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Historia obliczeń</h2>
+      </div>
+      <div class="history-actions">
+        <button id="export-csv-btn" class="btn-secondary" title="Eksportuj do CSV">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 2V9M7 9L4 6M7 9L10 6M2 11V12H12V11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          CSV
+        </button>
+        <button id="clear-history-btn" class="btn-secondary" title="Wyczyść historię">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 4H12M5 4V3C5 2.45 5.45 2 6 2H8C8.55 2 9 2.45 9 3V4M11 4V11C11 11.55 10.55 12 10 12H4C3.45 12 3 11.55 3 11V4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Wyczyść
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="history-filters">
+      <input type="text" id="history-search" class="history-search" placeholder="Szukaj produktu...">
+      <select id="history-filter-platform" class="history-filter-select">
+        <option value="all">Wszystkie platformy</option>
+        <option value="allegro">Allegro</option>
+        <option value="temu">Temu</option>
+        <option value="aliexpress">AliExpress</option>
+        <option value="other">Inna</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="history-table">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="timestamp">Data <span class="sort-icon">↕</span></th>
+            <th class="sortable" data-sort="productName">Produkt <span class="sort-icon">↕</span></th>
+            <th>Platforma</th>
+            <th class="sortable" data-sort="profit">Zysk (PLN) <span class="sort-icon">↕</span></th>
+            <th class="sortable" data-sort="marginPercent">Marża (%) <span class="sort-icon">↕</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </div>
+    <p id="history-empty" class="empty-state">
+      Brak zapisanych obliczeń. Wykonaj pierwsze obliczenie powyżej.
+    </p>
+  </section>
+
+  <footer class="app-footer">
+    <p>Kalkulator Marży Dropshippingowej &copy; 2026 &middot; v2.0</p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
