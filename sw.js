@@ -1,4 +1,4 @@
-const CACHE_NAME = 'margin-calc-v3';
+const CACHE_NAME = 'margin-calc-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   './js/calculator.js',
   './js/history.js',
   './js/validation.js',
+  './js/custom-select.js',
   './manifest.json',
 ];
 

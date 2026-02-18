@@ -1,6 +1,7 @@
 import { PLATFORM_DEFAULTS, calculate, calculateBreakEven, getProfitTier, getInterpretationText } from './calculator.js';
 import { validateForm, isFormFilled } from './validation.js';
 import { saveEntry, deleteEntry, clearHistory, renderHistory, exportHistoryCSV, getHistoryStats } from './history.js';
+import { initCustomSelects, syncCustomSelect, syncAllCustomSelects } from './custom-select.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // ── DOM references ──
@@ -153,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       purchaseCurrencySelect.value = 'PLN';
     }
+    syncCustomSelect(purchaseCurrencySelect);
   });
 
   // ── Foreign toggle ──
@@ -450,6 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsContent.hidden = true;
     clearAllErrors();
     updateButtonState();
+    syncAllCustomSelects();
     history.replaceState(null, '', window.location.pathname);
     showToast('Formularz wyczyszczony', 'info');
   });
@@ -484,6 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateButtonState();
       updateLivePreview();
       updateBreakeven();
+      syncAllCustomSelects();
       showToast(`Szablon "${preset}" załadowany`, 'info');
     });
   });
@@ -630,7 +634,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateButtonState();
     updateLivePreview();
     updateBreakeven();
+    syncAllCustomSelects();
   }
+
+  // Custom selects
+  initCustomSelects();
 
   // Service worker
   if ('serviceWorker' in navigator) {
