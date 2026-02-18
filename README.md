@@ -1,4 +1,4 @@
-# Kalkulator Marży Dropshippingowej
+# Kalkulator Marży 
 
 Kalkulator marży dla sprzedawców dropshippingowych. Oblicz zysk i rentowność ofert na **Allegro**, **Temu** i **AliExpress**.
 
