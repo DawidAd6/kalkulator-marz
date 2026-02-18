@@ -2,7 +2,7 @@
 
 Kalkulator marży dla sprzedawców dropshippingowych. Oblicz zysk i rentowność ofert na **Allegro**, **Temu** i **AliExpress**.
 
-🔗 **Live demo:** [kalkulator-marz.vercel.app](https://kalkulator-marz.vercel.app)
+🔗 **Live demo:** [product-comparison](https://product-comparison-brown.vercel.app/)
 
 ---
 
